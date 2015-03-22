@@ -1,0 +1,16 @@
+# build
+*.o
+*.gb
+*.gbc
+*.1bpp
+*.2bpp
+
+# rgbds extras
+*.sym
+*.map
+
+# precompiled python
+*.pyc
+
+# swap files
+*.swp
