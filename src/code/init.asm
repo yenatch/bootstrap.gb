@@ -1,6 +1,7 @@
 section "stack", wram0 [$c080]
 
-wStack: ds -$80
+	ds $80 - 1
+wStack::
 
 
 section "init", rom0
