@@ -28,6 +28,8 @@ VBlank:
 	call LoadGfxQueue
 	call nc, RunCallbacks
 
+	put [wVBlank], 1
+
 	pop hl
 	pop de
 	pop bc
@@ -35,6 +37,23 @@ VBlank:
 	reti
 
 
+section "vblank wait", rom0
+
+WaitVBlank::
+	xor a
+	ld [wVBlank], a
+.wait
+	halt
+	ld a, [wVBlank]
+	and a
+	jr z, .wait
+	ret
+
+
+section "vblank wram", wram0
+
+wVBlank:: db
+
+
 INCLUDE "code/video/queue.asm"
 INCLUDE "code/video/callback.asm"
-
