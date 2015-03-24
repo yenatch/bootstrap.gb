@@ -4,7 +4,16 @@ include "constants.asm"
 section "Main", rom0
 
 Main::
+	call HelloWorld
+.loop
+	call Joypad
+	call WaitVBlank
+	jr .loop
 
+
+section "Hello World", rom0
+
+HelloWorld:
 	ld bc, HelloWorldGfx
 	ld de, $8800
 	ld a, 10 * 4
@@ -16,12 +25,7 @@ Main::
 
 	call NormalPals
 
-.done
-	halt
-	jr .done
-
-
-section "Hello World", rom0
+	ret
 
 HelloWorldTilemap:
 	ld a, $80
