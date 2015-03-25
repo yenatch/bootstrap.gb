@@ -7,8 +7,53 @@ Main::
 	call HelloWorld
 .loop
 	call Joypad
-	call WaitVBlank
+	call Scroll
+	call HandleVBlank
 	jr .loop
+
+HandleVBlank:
+	ld a, bank(MainCallback)
+	ld hl, MainCallback
+	call Callback
+	call WaitVBlank
+	ret
+
+MainCallback:
+	put [rSCY], [wSCY]
+	put [rSCX], [wSCX]
+	ret
+
+Scroll:
+button: macro
+	ld a, [wJoy]
+	and \1
+endm
+	put b, [wSCY]
+	put c, [wSCX]
+
+	button D_UP
+	jr nz, .up
+	dec b
+.up
+	button D_DOWN
+	jr nz, .down
+	inc b
+.down
+	button D_LEFT
+	jr nz, .left
+	dec c
+.left
+	button D_RIGHT
+	jr nz, .right
+	inc c
+.right
+	put [wSCY], b
+	put [wSCX], c
+	ret
+
+section "main wram", wram0
+wSCY: db
+wSCX: db
 
 
 section "Hello World", rom0
