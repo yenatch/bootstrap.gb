@@ -66,6 +66,8 @@ RunCallbacks:
 	ld a, [hli]
 	ld [wFarCallBank], a
 	ld a, [hli]
+
+	push hl
 	ld h, [hl]
 	ld l, a
 
@@ -74,12 +76,13 @@ RunCallbacks:
 	ld a, [wFarCallBank]
 	rst Bankswitch
 
-	push hl
 	call __hl__
-	pop hl
 
 	pop af
 	rst Bankswitch
+
+	pop hl
+	inc hl
 
 	pop af
 	dec a
