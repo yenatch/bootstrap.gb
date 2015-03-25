@@ -6,3 +6,5 @@ include "gbhw.asm"
 include "macros.asm"
 
 include "hram.asm"
+
+include "constants/buttons.asm"
