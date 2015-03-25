@@ -21,28 +21,41 @@ HelloWorld:
 
 	ld a, bank(HelloWorldTilemap)
 	ld hl, HelloWorldTilemap
+	ld de, $9800 + 32 * 7 + 5
+	ld b, 4
+	ld c, 10
 	call Callback
 
 	call NormalPals
 
 	ret
 
+
 HelloWorldTilemap:
+
+	ld h, d
+	ld l, e
+
+	ld de, 32
+	ld a, e
+	sub c
+	ld e, a
+
 	ld a, $80
-	ld hl, $9800 + 32 * 7 + 5
-	ld de, 32 - 10
-	ld b, 4
 .y
-	ld c, 10
+	push bc
 .x
 	ld [hli], a
 	inc a
 	dec c
 	jr nz, .x
+	pop bc
+
 	add hl, de
 	dec b
 	jr nz, .y
 	ret
+
 
 HelloWorldGfx:
 	INCBIN "gfx/hello_world.2bpp"
