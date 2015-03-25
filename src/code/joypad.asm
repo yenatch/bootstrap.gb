@@ -1,5 +1,5 @@
-D_PAD   = $10
-BUTTONS = $20
+BUTTONS = $10
+D_PAD   = $20
 DONE    = $30
 
 
