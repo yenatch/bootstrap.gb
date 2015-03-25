@@ -31,6 +31,14 @@ endm
 	put b, [wSCY]
 	put c, [wSCX]
 
+	ld a, [wScrollReset]
+	and a
+	jr nz, .reset
+
+	button START
+	jr nz, .start
+
+.dpad
 	button D_UP
 	jr nz, .up
 	dec b
@@ -47,6 +55,30 @@ endm
 	jr nz, .right
 	inc c
 .right
+	jr .done
+
+.start
+	put [wScrollReset], 10
+	jr .done
+
+.reset
+	dec a
+	ld [wScrollReset], a
+
+	ld a, b
+	and $80
+	srl b
+	or b
+	ld b, a
+
+	ld a, c
+	and $80
+	srl c
+	or c
+	ld c, a
+;	jr .done
+
+.done
 	put [wSCY], b
 	put [wSCX], c
 	ret
@@ -54,6 +86,7 @@ endm
 section "main wram", wram0
 wSCY: db
 wSCX: db
+wScrollReset: db
 
 
 section "Hello World", rom0
