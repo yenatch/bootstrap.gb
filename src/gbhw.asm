@@ -1,29 +1,15 @@
 ; Graciously aped from http://nocash.emubase.de/pandocs.htm.
 
-; MBC3
-MBC3_SRAM     EQU $0000
-MBC3_ROMBank  EQU $2000
-MBC3_SRAMBank EQU $4000
-MBC3_Latch    EQU $6000
-MBC3_RTC      EQU $a000
 
-; MBC5
-MBC5_SRAM     EQU $0000
-MBC5_ROMBank  EQU $2000
-MBC5_ROMBankH EQU $3000
-MBC5_SRAMBank EQU $4000
+; VRAM
+vChars0 = $8000
+vChars1 = $8800
+vChars2 = $9000
+vBGMap0 = $9800
+vBGMap1 = $9c00
 
-SRAM_DISABLE EQU $00
-SRAM_ENABLE  EQU $0a
-
-RTC_S  EQU $08 ; Seconds   0-59 (0-3Bh)
-RTC_M  EQU $09 ; Minutes   0-59 (0-3Bh)
-RTC_H  EQU $0a ; Hours     0-23 (0-17h)
-RTC_DL EQU $0b ; Lower 8 bits of Day Counter (0-FFh)
-RTC_DH EQU $0c ; Upper 1 bit of Day Counter, Carry Bit, Halt Flag
-        ; Bit 0  Most significant bit of Day Counter (Bit 8)
-        ; Bit 6  Halt (0=Active, 1=Stop Timer)
-        ; Bit 7  Day Counter Carry Bit (1=Counter Overflow)
+BG_WIDTH  = 32
+BG_HEIGHT = 32
 
 
 ; interrupt flags
@@ -114,3 +100,28 @@ rUNKN6      EQU $ff76 ; (00h) - Always 00h (Read Only)
 rUNKN7      EQU $ff77 ; (00h) - Always 00h (Read Only)
 rIE         EQU $ffff ; Interrupt Enable (R/W)
 
+
+; MBC3
+MBC3_SRAM     EQU $0000
+MBC3_ROMBank  EQU $2000
+MBC3_SRAMBank EQU $4000
+MBC3_Latch    EQU $6000
+MBC3_RTC      EQU $a000
+
+; MBC5
+MBC5_SRAM     EQU $0000
+MBC5_ROMBank  EQU $2000
+MBC5_ROMBankH EQU $3000
+MBC5_SRAMBank EQU $4000
+
+SRAM_DISABLE EQU $00
+SRAM_ENABLE  EQU $0a
+
+RTC_S  EQU $08 ; Seconds   0-59 (0-3Bh)
+RTC_M  EQU $09 ; Minutes   0-59 (0-3Bh)
+RTC_H  EQU $0a ; Hours     0-23 (0-17h)
+RTC_DL EQU $0b ; Lower 8 bits of Day Counter (0-FFh)
+RTC_DH EQU $0c ; Upper 1 bit of Day Counter, Carry Bit, Halt Flag
+        ; Bit 0  Most significant bit of Day Counter (Bit 8)
+        ; Bit 6  Halt (0=Active, 1=Stop Timer)
+        ; Bit 7  Day Counter Carry Bit (1=Counter Overflow)
