@@ -16,6 +16,11 @@ farcall: macro
 	dw  \1
 endm
 
+callback: macro
+	ld a, bank(\1)
+	ld hl, \1
+	call Callback
+endm
 
 fill: macro
 	ld hl, \1

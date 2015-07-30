@@ -1,125 +1,39 @@
 include "constants.asm"
 
 
-section "Main", rom0
-
-Main::
-	call HelloWorld
-.loop
-	call Joypad
-	call Scroll
-	call HandleVBlank
-	jr .loop
-
-HandleVBlank:
-	ld a, bank(MainCallback)
-	ld hl, MainCallback
-	call Callback
-	call WaitVBlank
-	ret
-
-MainCallback:
-	put [rSCY], [wSCY]
-	put [rSCX], [wSCX]
-	ret
-
-Scroll:
-button: macro
-	ld a, [wJoy]
-	and \1
-endm
-	put b, [wSCY]
-	put c, [wSCX]
-
-	ld a, [wScrollReset]
-	and a
-	jr nz, .reset
-
-	button START
-	jr nz, .start
-
-.dpad
-	button D_UP
-	jr nz, .up
-	dec b
-.up
-	button D_DOWN
-	jr nz, .down
-	inc b
-.down
-	button D_LEFT
-	jr nz, .left
-	dec c
-.left
-	button D_RIGHT
-	jr nz, .right
-	inc c
-.right
-	jr .done
-
-.start
-	put [wScrollReset], 10
-	jr .done
-
-.reset
-	dec a
-	ld [wScrollReset], a
-
-	ld a, b
-	and $80
-	srl b
-	or b
-	ld b, a
-
-	ld a, c
-	and $80
-	srl c
-	or c
-	ld c, a
-;	jr .done
-
-.done
-	put [wSCY], b
-	put [wSCX], c
-	ret
-
-section "main wram", wram0
-wSCY: db
-wSCX: db
-wScrollReset: db
-
-
 section "Hello World", rom0
+
+
+HELLO_WORLD_START_TILE = $80 ; VChars1
+
 
 HelloWorld:
 	ld bc, HelloWorldGfx
-	ld de, $8800
+	ld de, vChars1
 	ld a, 10 * 4
 	call QueueGfx
 
-	ld a, bank(HelloWorldTilemap)
-	ld hl, HelloWorldTilemap
-	ld de, $9800 + 32 * 7 + 5
+	ld de, vBGMap0 + BG_WIDTH * 7 + 5
 	ld b, 4
 	ld c, 10
-	call Callback
+	callback DrawHelloTilemap
 
 	call NormalPals
 
 	ret
 
 
-HelloWorldTilemap:
+DrawHelloTilemap:
 
 	ld h, d
 	ld l, e
 
-	ld de, 32
+	ld de, BG_WIDTH
 	ld a, e
 	sub c
 	ld e, a
 
-	ld a, $80
+	ld a, HELLO_WORLD_START_TILE
 .y
 	push bc
 .x
@@ -139,11 +53,92 @@ HelloWorldGfx:
 	INCBIN "gfx/hello_world.2bpp"
 
 
-section "NormalPals", rom0
-
 NormalPals:
-	ld a, $e4
+	ld a, %11100100 ; quaternary: 3210
 	ld [rOBP0], a
 	ld [rOBP1], a
 	ld [rBGP], a
 	ret
+
+
+
+section "Main", rom0
+
+
+Main::
+	call HelloWorld
+.loop
+	call Joypad
+	call Scroll
+	call RequestFrame
+	jr .loop
+
+
+RequestFrame:
+	callback UpdateScroll
+	call WaitVBlank
+	ret
+
+
+UpdateScroll:
+	put [rSCY], [wSCY]
+	put [rSCX], [wSCX]
+	ret
+
+
+Scroll:
+
+if_button: macro
+	ld a, [wJoy]
+	and \1
+	jr z, .ok\@
+	\2
+.ok\@
+endm
+
+	put b, [wSCY]
+	put c, [wSCX]
+
+	ld a, [wScrollReset]
+	and a
+	jr nz, .reset
+
+	if_button START, jr .start
+
+	if_button D_UP,    inc b
+	if_button D_DOWN,  dec b
+	if_button D_LEFT,  inc c
+	if_button D_RIGHT, dec c
+	jr .done
+
+.start
+	put [wScrollReset], 10
+	jr .done
+
+.reset
+	dec a
+	ld [wScrollReset], a
+
+	ld a, b
+	and %10000000 ; sign
+	srl b
+	or b
+	ld b, a
+
+	ld a, c
+	and %10000000 ; sign
+	srl c
+	or c
+	ld c, a
+
+.done
+	put [wSCY], b
+	put [wSCX], c
+	ret
+
+
+section "main wram", wram0
+
+wSCY: ds 1
+wSCX: ds 1
+wScrollReset: ds 1
