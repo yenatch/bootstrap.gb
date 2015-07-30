@@ -13,6 +13,14 @@ section "rst FarCall", rom0 [FarCall]
 	jp FarCall_
 
 
+section "rst $10", rom0 [$10]
+section "rst $18", rom0 [$18]
+section "rst $20", rom0 [$20]
+section "rst $28", rom0 [$28]
+section "rst $30", rom0 [$30]
+section "rst $38", rom0 [$38]
+
+
 section "farcall", rom0
 
 FarCall_:
