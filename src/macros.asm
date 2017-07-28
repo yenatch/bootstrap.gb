@@ -22,6 +22,12 @@ callback: macro
 	call Callback
 endm
 
+task: macro
+	ld a, bank(\1)
+	ld hl, \1
+	call CreateTask
+endm
+
 fill: macro
 	ld hl, \1
 	ld bc, \2

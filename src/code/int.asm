@@ -28,6 +28,8 @@ VBlank:
 	call LoadGfxQueue
 	call nc, RunCallbacks
 
+	call CallTasks
+
 	put [wVBlank], 1
 
 	pop hl
