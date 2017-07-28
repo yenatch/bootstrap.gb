@@ -1,5 +1,5 @@
 NUM_CALLBACKS EQU 5
-CALLBACK_LENGTH EQU 7
+CALLBACK_LENGTH EQU 3
 
 
 section "callback wram", wram0
@@ -12,7 +12,7 @@ wCallbacks:
 section "callback", rom0
 
 Callback::
-; Call a:hl during the next vblank. Pass in bc and de.
+; Call a:hl during the next vblank.
 
 	push bc
 	push de
@@ -44,22 +44,9 @@ Callback::
 	ld [hl], d
 	inc hl
 
-	pop de
-	pop bc
-
-	ld [hl], b
-	inc hl
-	ld [hl], c
-	inc hl
-	ld [hl], d
-	inc hl
-	ld [hl], e
-	inc hl
-
 	ld a, [wCallbacks]
 	inc a
 	ld [wCallbacks], a
-	ret
 
 .exit
 	pop de
@@ -73,23 +60,14 @@ Callback::
 ;	and a
 ;	ret z
 ;
-;	put [wFarCallBank], [hli]
-;	put [wFarCallAddress + 0], [hli]
-;	put [wFarCallAddress + 1], [hli]
-;	put b, [hli]
-;	put c, [hli]
-;	put d, [hli]
-;	put e, [hli]
+;	ld a, [hROMBank]
+;	push af
+;	ld a, [hli]
+;	rst Bankswitch
 ;
-;	ld hl, wFarCallAddress
 ;	ld a, [hli]
 ;	ld h, [hl]
 ;	ld l, a
-;
-;	ld a, [hROMBank]
-;	push af
-;	ld a, [wFarCallBank]
-;	rst Bankswitch
 ;
 ;	call __hl__
 ;
@@ -105,38 +83,33 @@ RunCallbacks:
 	and a
 	ret z
 
+	ld c, a
+	put b, [hROMBank]
 .loop
-	push af
+	push bc
 
-	put [wFarCallBank], [hli]
-	put [wFarCallAddress + 0], [hli]
-	put [wFarCallAddress + 1], [hli]
-	put b, [hli]
-	put c, [hli]
-	put d, [hli]
-	put e, [hli]
+	ld a, [hli]
+	rst Bankswitch
+
+	ld a, [hli]
+	ld b, a
+	ld a, [hli]
 
 	push hl
-
-	ld hl, wFarCallAddress
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-
-	ld a, [hROMBank]
-	push af
-	ld a, [wFarCallBank]
-	rst Bankswitch
+	ld h, a
+	ld l, b
 
 	call __hl__
 
-	pop af
-	rst Bankswitch
-
 	pop hl
-	pop af
-	dec a
+	pop bc
+
+	dec c
 	jr nz, .loop
 
+	ld a, b
+	rst Bankswitch
+
+	xor a
 	ld [wCallbacks], a
 	ret

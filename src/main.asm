@@ -24,9 +24,6 @@ Main::
 	ld a, IMAGE_WIDTH * IMAGE_HEIGHT
 	call QueueGfx
 
-	ld de, vBGMap0 + BG_WIDTH * IMAGE_Y + IMAGE_X
-	ld b, IMAGE_HEIGHT
-	ld c, IMAGE_WIDTH
 	callback .DrawTilemap
 
 	call .SetPalette
@@ -34,28 +31,11 @@ Main::
 	ret
 
 .DrawTilemap:
-	ld h, d
-	ld l, e
-
-	ld de, BG_WIDTH
-	ld a, e
-	sub c
-	ld e, a
-
+	ld hl, vBGMap0 + BG_WIDTH * IMAGE_Y + IMAGE_X
 	ld a, START_TILE
-.y
-	push bc
-.x
-	ld [hli], a
-	inc a
-	dec c
-	jr nz, .x
-	pop bc
-
-	add hl, de
-	dec b
-	jr nz, .y
-	ret
+	ld b, IMAGE_HEIGHT
+	ld c, IMAGE_WIDTH
+	jp DrawTilemapRect
 
 .Graphics:
 	INCBIN "gfx/hello_world.2bpp"
