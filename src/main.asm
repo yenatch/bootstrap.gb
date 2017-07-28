@@ -1,16 +1,13 @@
 include "constants.asm"
 
 
-START_TILE = $80 ; This maps to vChars1.
-
-; All values are in tiles.
-IMAGE_WIDTH = 10
-IMAGE_HEIGHT = 4
-IMAGE_X = 5
-IMAGE_Y = 7
-
-
 section "Main", rom0
+
+START_TILE = 0
+X = 5
+Y = 7
+HEIGHT = 4
+WIDTH = 10
 
 Main::
 	call .Setup
@@ -20,25 +17,21 @@ Main::
 
 .Setup:
 	ld bc, .Graphics
-	ld de, vChars1
-	ld a, IMAGE_WIDTH * IMAGE_HEIGHT
+	ld de, vChars2
+	ld a, WIDTH * HEIGHT
 	call QueueGfx
 
 	callback .DrawTilemap
 
 	call .SetPalette
-
 	ret
 
 .DrawTilemap:
-	ld hl, vBGMap0 + BG_WIDTH * IMAGE_Y + IMAGE_X
+	ld hl, vBGMap0 + BG_WIDTH * Y + X
 	ld a, START_TILE
-	ld b, IMAGE_HEIGHT
-	ld c, IMAGE_WIDTH
+	ld b, HEIGHT
+	ld c, WIDTH
 	jp DrawTilemapRect
-
-.Graphics:
-	INCBIN "gfx/hello_world.2bpp"
 
 .SetPalette:
 	ld a, %11100100 ; quaternary: 3210
@@ -47,3 +40,5 @@ Main::
 	ld [rBGP], a
 	ret
 
+.Graphics:
+	INCBIN "gfx/hello_world.2bpp"
