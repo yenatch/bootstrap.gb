@@ -16,6 +16,33 @@ wTasks:
 section "task", rom0
 
 CreateTask::
+; Create a new task and set its function to a:de.
+; Return its id in a and its address in hl.
+; If there were no available tasks, return carry.
+	push de
+	ld d, a
+	push de
+	call ReserveTask
+	pop de
+	ld a, d
+	pop de
+	ret c
+	; fallthrough
+
+SetTaskFunc::
+; Set the function of the task at hl to a:de.
+	inc hl
+	ld [hl], a
+	inc hl
+	ld [hl], e
+	inc hl
+	ld [hl], d
+	dec hl
+	dec hl
+	dec hl
+	ret
+
+ReserveTask::
 ; Reserve a new task.
 ; Return its id in a and its address in hl.
 ; If there are no available tasks, return carry.
@@ -62,20 +89,7 @@ DestroyTask::
 	ld [hl], 0
 	ret
 
-SetTaskFunc::
-; Set the function of the task at hl to a:de.
-	inc hl
-	ld [hl], a
-	inc hl
-	ld [hl], e
-	inc hl
-	ld [hl], d
-	dec hl
-	dec hl
-	dec hl
-	ret
-
-CallTasks::
+RunTasks::
 ; Call all the active tasks.
 ; Enter with a = taskId, hl = &task->data
 
@@ -100,10 +114,14 @@ CallTasks::
 	rst Bankswitch
 
 	ld a, c
+	push hl
 	call __de__
+	pop hl
 
 	pop af
 	rst Bankswitch
+
+	ld de, TASK_LENGTH - 4
 
 .next:
 	add hl, de

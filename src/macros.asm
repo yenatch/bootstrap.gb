@@ -24,7 +24,7 @@ endm
 
 task: macro
 	ld a, bank(\1)
-	ld hl, \1
+	ld de, \1
 	call CreateTask
 endm
 

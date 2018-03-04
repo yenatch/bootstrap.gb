@@ -28,7 +28,7 @@ VBlank:
 	call LoadGfxQueue
 	call nc, RunCallbacks
 
-	call CallTasks
+	call RunTasks
 
 	put [wVBlank], 1
 
