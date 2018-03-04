@@ -115,7 +115,9 @@ RunTasks::
 
 	ld a, c
 	push hl
+	push bc
 	call __de__
+	pop bc
 	pop hl
 
 	pop af
